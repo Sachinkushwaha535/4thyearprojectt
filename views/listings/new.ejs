@@ -1,0 +1,106 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="row">
+  <div class="col-8 offset-2">
+    <form method="POST" action="/listings" class="needs-validation" enctype="multipart/form-data" novalidate>
+      <!-- Title -->
+      <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input name="listing[title]" 
+               id="title"
+               placeholder="Enter title" 
+               type="text"  
+               class="form-control" 
+               required />
+        <div class="invalid-feedback">
+          Please provide a title.
+        </div>
+      </div>
+      <!-- Description -->
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea name="listing[description]" 
+                  id="description"
+                  placeholder="Enter description"
+                  class="form-control" 
+                  required></textarea>
+        <div class="invalid-feedback">
+          Please provide a description.
+        </div>
+      </div>
+      <!-- Image Upload -->
+      <div class="mb-3">
+        <label for="image" class="form-label">Upload Image</label>
+        <input name="listing[image]" 
+               id="image"
+               type="file" 
+               class="form-control" 
+               required />
+        <div class="invalid-feedback">
+          Please upload an image.
+        </div>
+      </div>
+      <!-- Price and Country -->
+      <div class="row">
+        <div class="mb-3 col-4">
+          <label for="price" class="form-label">Price</label>
+          <input name="listing[price]" 
+                 id="price"
+                 placeholder="Enter price" 
+                 type="number"
+                 class="form-control" 
+                 required /> 
+          <div class="invalid-feedback">
+            Please provide a price.
+          </div>
+        </div>
+        <div class="mb-3 col-8">
+          <label for="country" class="form-label">Country</label>
+          <input name="listing[country]" 
+                 id="country"
+                 placeholder="Enter country" 
+                 type="text" 
+                 class="form-control" 
+                 required />
+          <div class="invalid-feedback">
+            Please provide a country.
+          </div>
+        </div>
+      </div>
+      <!-- Location -->
+      <div class="mb-3">
+        <label for="location" class="form-label">Location</label>
+        <input name="listing[location]" 
+               id="location"
+               placeholder="Enter location" 
+               type="text" 
+               class="form-control" 
+               required />
+        <div class="invalid-feedback">
+          Please provide a location.
+        </div>
+      </div>
+      <!-- Submit Button -->
+      <button class="btn btn-dark" type="submit" id="submit-btn">Add</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Bootstrap form validation and preventing double submission
+  (function() {
+    'use strict';
+    var form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+      // Prevent submission if the form is not valid
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      } else {
+        // Disable the submit button to prevent multiple submissions
+        document.getElementById('submit-btn').disabled = true;
+      }
+      form.classList.add('was-validated');
+    }, false);
+  })();
+</script>

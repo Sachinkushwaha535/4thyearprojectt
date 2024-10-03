@@ -1,0 +1,212 @@
+<% layout("layouts/boilerplate") %> 
+
+<style>
+    .alert {
+        display: none; /* Hide the alert by default */
+    }
+
+    .alert.show {
+        display: block; /* Show the alert when it has the "show" class */
+    }
+</style>
+
+<% if (success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= success %>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+<% } %>
+
+<script>
+    // If the alert is present, we add the "show" class to it
+    document.addEventListener("DOMContentLoaded", function() {
+        const alert = document.querySelector('.alert');
+        if (alert) {
+            alert.classList.add('show'); // Show the alert if it exists
+        }
+    });
+</script>
+
+
+<style>
+    #filters {
+        display: flex;
+        flex-wrap: nowrap; /* Keep everything on the same line */
+        align-items: center; /* Align items vertically in the center */
+        justify-content: space-between; /* Distribute space between elements */
+        gap: 0.5rem;
+        margin-top: 1rem;
+        /* Reduce spacing between filters */
+    }
+
+    .filter {
+        text-align: center;
+        margin-right: 1rem; /* Reduced margin for more compact layout */
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+        cursor: pointer; /* Added for better UX */
+    }
+
+    .filter i {
+        font-size: 1.2rem; /* Reduced icon size further */
+    }
+
+    .filter p {
+        font-size: 0.75rem; /* Reduced text size further */
+    }
+
+    .filter:hover {
+        opacity: 1;
+    }
+
+    .listing-card {
+        margin-bottom: 1.5rem; /* Adds space between cards */
+    }
+
+    .card-img-top {
+        height: 20rem; /* Ensures all images have the same height */
+        object-fit: cover; /* Ensures images cover the area without distortion */
+    }
+
+    .tax-info {
+        display: none;
+    }
+
+    .tax-toggle {
+        margin-left: auto; /* Push the toggle to the far right */
+        border: 1px solid black;
+        border-radius: 1rem;
+        height: 2rem; /* Reduced height further */
+        padding: 0.2rem 0.5rem; /* Reduced padding for a more compact look */
+        display: flex;
+        align-items: center;
+        font-size: 0.75rem; /* Reduced text size for the toggle */
+    }
+
+    .form-check-label {
+        margin-left: 0.5rem;
+    }
+</style>
+
+<div class="filters" id="filters">
+    <!-- Filter Items -->
+    <div class="filter">
+        <div><i class="fa-solid fa-fire"></i></div>
+        <p>Trending</p>
+    </div>
+    <div class="filter">
+        <div><i class="fa-solid fa-bed"></i></div>
+        <p>Rooms</p>
+    </div>
+    <div class="filter">
+        <div><i class="fa-solid fa-mountain-city"></i></div>
+        <p>Iconic Cities</p>
+    </div>
+    <div class="filter">
+        <div><i class="fa-sharp fa-solid fa-mountain"></i></div>
+        <p>Mountains</p>
+    </div>
+    <div class="filter">
+        <div><i class="fa-brands fa-fort-awesome"></i></div>
+        <p>Castles</p>
+    </div>
+    <div class="filter">
+        <div><i class="fa-solid fa-person-swimming"></i></div>
+        <p>Amazing Pools</p>
+    </div>
+    <div class="filter">
+        <div><i class="fa-solid fa-campground"></i></div>
+        <p>Camping</p>
+    </div>
+    <div class="filter">
+        <div><i class="fa-solid fa-cow"></i></div>
+        <p>Farms</p>
+    </div>
+    <div class="filter">
+        <div><i class="fa-brands fa-galactic-republic"></i></div>
+        <p>Arctic</p>
+    </div>
+    <div class="filter">
+        <div><i class="fa-solid fa-igloo"></i></div>
+        <p>Dome</p>
+    </div>
+    <div class="filter">
+        <div><i class="fa-solid fa-ship"></i></div>
+        <p>Boat</p>
+    </div>
+
+    <div class="tax-toggle">
+        <div class="form-check-reverse form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+            <label class="form-check-label" for="flexSwitchCheckDefault">Display Taxes</label>
+        </div>
+    </div>
+</div>
+
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+    <% for (let listing of allListings) { %>
+        <a href="/listings/<%= listing._id %>" class="text-decoration-none text-dark">
+            <div class="card col listing-card">
+                <img 
+                    src="<%= listing.image.url %>" 
+                    class="card-img-top" 
+                    alt="Listing Image" 
+                    loading="lazy"
+                    onerror="this.src='/images/default.jpg';" 
+                />
+                <div class="card-body">
+                    <p class="card-text">
+                        <b><%= listing.title %></b> <br />
+                        &#8377;
+                        <% if (listing.price != null) { %>
+                            <%= listing.price.toLocaleString("en-IN") %>
+                            <i class="tax-info"> &nbsp; &nbsp;+18% GST</i>
+                        <% } else { %>
+                            Price not available
+                        <% } %>
+                        / night
+                    </p>
+                </div>
+            </div>
+        </a>
+    <% } %>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Automatically hide success alerts after 5 seconds
+        const successAlerts = document.querySelectorAll(".alert-success");
+        successAlerts.forEach(alert => {
+            setTimeout(() => {
+                alert.classList.remove("show");
+                alert.classList.add("fade");
+            }, 5000);
+        });
+
+        // Automatically hide error alerts after 5 seconds
+        const errorAlerts = document.querySelectorAll(".alert-danger");
+        errorAlerts.forEach(alert => {
+            setTimeout(() => {
+                alert.classList.remove("show");
+                alert.classList.add("fade");
+            }, 5000);
+        });
+
+        const taxSwitch = document.getElementById("flexSwitchCheckDefault");
+        
+        if (taxSwitch) { // Check if the element exists
+            taxSwitch.addEventListener("click", () => {
+                const taxInfoElements = document.getElementsByClassName("tax-info");
+                Array.from(taxInfoElements).forEach(info => {
+                    if(info.style.display !== "inline"){
+                        info.style.display = "inline";
+                    } else {
+                        info.style.display = "none";
+                    }
+                });
+            });
+        }
+    });
+</script>
