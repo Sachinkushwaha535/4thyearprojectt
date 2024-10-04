@@ -3,7 +3,7 @@ const { cloudinary } = require('../cloudconfig');
 const streamifier = require('streamifier');
 const ExpressError = require('../utils/ExpressError');
 const mongoose = require('mongoose');  // Make sure mongoose is 
-const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geoCoding');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapToken = process.env.MAP_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapToken});
 
