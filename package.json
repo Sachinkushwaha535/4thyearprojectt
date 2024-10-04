@@ -1,7 +1,6 @@
 {
-  "engines":{
+  "engines": {
     "node": "18.17.1"
-
   },
   "name": "4thyearprojectt",
   "version": "1.0.0",
@@ -15,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "-": "^0.0.1",
-    "@mapbox/mapbox-sdk": "^0.16.0",
+    "@mapbox/mapbox-sdk": "^0.16.1",
     "aws-sdk": "^2.1691.0",
     "cloudinary": "^1.41.3",
     "connect": "^3.7.0",
