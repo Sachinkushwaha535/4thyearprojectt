@@ -10,15 +10,18 @@ module.exports.Postsignup = async (req, res, next) => {
         const { username, email, password } = req.body;
         const newUser = new User({ email, username });
         const registeredUser = await User.register(newUser, password);
-        console.log(registeredUser);
+        console.log("Registered user:", registeredUser);
+        
         req.login(registeredUser, (err) => {
             if (err) {
-                return next(err); // Passes the error to the error-handling middleware
+                console.error("Login error:", err);
+                return next(err); // Properly pass error to middleware
             }
             req.flash("success", "Welcome to Wonderlust");
-            res.redirect("/listings");
+            res.redirect("/listings"); // Ensure redirection to home after login
         });
     } catch (e) {
+        console.error("Signup error:", e);
         req.flash("error", e.message);
         res.redirect("/signup");
     }
@@ -37,7 +40,7 @@ module.exports.Postlogin = async (req, res) => {
 module.exports.Logout = (req, res, next) => {
     req.logout((err) => {
         if (err) {
-            return next(err); // Passes the error to the error-handling middleware
+            return next(err);
         }
         req.flash("success", "You are logged out!");
         res.redirect("/listings");

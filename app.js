@@ -96,7 +96,7 @@ app.use('/listings', listings);
 app.use('/listings/:id/reviews', reviews); // Properly mount reviews route with :id
 app.use("/", userRoutes);
 
-// 404 Handling with Debug Info
+// 404 Handling
 app.all('*', (req, res, next) => {
     next(new ExpressError(404, 'Page not found'));
 });
