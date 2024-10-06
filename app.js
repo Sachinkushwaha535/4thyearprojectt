@@ -94,7 +94,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/listings', listings);
 app.use('/listings/:id/reviews', reviews); // Properly mount reviews route with :id
-app.use("/", userRoutes);
+app.use("/users", userRoutes);
 
 // 404 Handling
 app.all('*', (req, res, next) => {
