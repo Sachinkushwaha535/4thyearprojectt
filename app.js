@@ -100,6 +100,9 @@ app.use('/', userRoutes);
 // app.all('*', (req, res, next) => {
 //     next(new ExpressError(404, 'Page not found'));
 // });
+app.get('/', (req, res) => {
+    res.send('Hello World!')
+  })
 
 // Global Error Handler
 app.use((err, req, res, next) => {
