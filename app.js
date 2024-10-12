@@ -94,12 +94,12 @@ app.use((req, res, next) => {
 // Routes
 app.use('/listings', listings);
 app.use('/listings/:id/reviews', reviews); // Properly mount reviews route with :id
-app.use("/users", userRoutes);
+app.use('/', userRoutes);
 
 // 404 Handling
-app.all('*', (req, res, next) => {
-    next(new ExpressError(404, 'Page not found'));
-});
+// app.all('*', (req, res, next) => {
+//     next(new ExpressError(404, 'Page not found'));
+// });
 
 // Global Error Handler
 app.use((err, req, res, next) => {
