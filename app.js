@@ -40,15 +40,13 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public')));
 
 // Session Store Configuration
 const store = MongoStore.create({
     mongoUrl: dbUrl,
-    crypto: {
-        secret: SESSION_SECRET,
-    },
-    touchAfter: 24 * 3600 // Time in seconds
+    secret: SESSION_SECRET,
+    touchAfter: 24 * 3600
 });
 
 store.on("error", (err) => {
@@ -63,7 +61,7 @@ const sessionOptions = {
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Ensure secure cookies in production
+        secure: process.env.NODE_ENV === 'production',
         expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
         maxAge: 7 * 24 * 60 * 60 * 1000
     }
@@ -83,14 +81,14 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
-    res.locals.currUser = req.user; // Current user information
+    res.locals.currUser = req.user;
     next();
 });
 
 // Routes
-app.use('/', userRoutes);  // Use userRoutes for root
-app.use('/listings', listings); // Use listings routes for /listings
-app.use('/listings/:id/reviews', reviews); // Use reviews routes for specific listing
+app.use('/', userRoutes);
+app.use('/listings', listings);
+app.use('/listings/:id/reviews', reviews); // Make sure this route is correctly placed
 
 // Catch-all 404 Error Handler
 app.all('*', (req, res, next) => {
@@ -101,6 +99,7 @@ app.all('*', (req, res, next) => {
 app.use((err, req, res, next) => {
     const { statusCode = 500 } = err;
     if (!err.message) err.message = 'Something went wrong!';
+    console.error(err); // Log the error details to the console
     res.status(statusCode).render('error', { err });
 });
 

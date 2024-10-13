@@ -3,7 +3,6 @@ const Review = require('../models/review');
 const ExpressError = require('../utils/ExpressError');
 const mongoose = require("mongoose");
 
-// Create a new review for a listing
 module.exports.createReview = async (req, res, next) => {
     const { id } = req.params;
 
@@ -38,18 +37,18 @@ module.exports.createReview = async (req, res, next) => {
         req.flash('success', 'Review submitted successfully!');
         res.redirect(`/listings/${listing._id}`);
     } catch (err) {
-        // Handle errors and pass them to the global error handler
-        next(err);
+        console.error(err);
+        req.flash('error', 'Something went wrong while submitting your review.');
+        res.redirect(`/listings/${listing._id}`);
     }
 };
 
-// Delete a review from a listing
 module.exports.deleteReview = async (req, res, next) => {
     const { id, reviewId } = req.params;
 
     // Validate IDs for listing and review
     if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(reviewId)) {
-        return next(new ExpressError(400, 'Invalid Listing or Review ID'));
+        return next(new ExpressError(400, 'Invalid ID'));
     }
 
     try {
@@ -61,7 +60,8 @@ module.exports.deleteReview = async (req, res, next) => {
         req.flash('success', 'Review deleted successfully!');
         res.redirect(`/listings/${id}`);
     } catch (err) {
-        // Handle errors and pass them to the global error handler
-        next(err);
+        console.error(err);
+        req.flash('error', 'Something went wrong while deleting the review.');
+        res.redirect(`/listings/${id}`);
     }
 };
