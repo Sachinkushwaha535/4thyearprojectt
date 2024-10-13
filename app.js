@@ -34,11 +34,7 @@ mongoose.connect(dbUrl, {
         console.error('Error connecting to MongoDB:', err);
     });
 
-mongoose.connection.on('error', err => {
-    console.error('MongoDB connection error:', err);
-});
-
-// View Engine and Static Files
+// Middleware & Static Files
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -83,7 +79,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// Global Middleware for Flash Messages and Current User
+// Flash and User Data Middleware
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
@@ -93,26 +89,28 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/listings', listings);
-app.use('/listings/:id/reviews', reviews); // Properly mount reviews route with :id
+app.use('/listings/:id/reviews', reviews);
 app.use('/', userRoutes);
 
-// 404 Handling
-// app.all('*', (req, res, next) => {
-//     next(new ExpressError(404, 'Page not found'));
-// });
+// Home Route
 app.get('/', (req, res) => {
-    res.send('Hello World!')
-  })
+    res.send('Hello World!');
+});
+
+// Catch-all 404 Error Handler
+app.all('*', (req, res, next) => {
+    next(new ExpressError('Page not found', 404));
+});
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-    const { statusCode = 500, message = 'Something went wrong' } = err;
-    console.error('Error:', err.stack || err);
-    res.status(statusCode).render('error', { message: message || 'Internal Server Error', statusCode });
+    const { statusCode = 500 } = err;
+    if (!err.message) err.message = 'Something went wrong!';
+    res.status(statusCode).render('error', { err });
 });
 
 // Start the Server
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
-    console.log(`Server is listening on port ${port}`);
+    console.log(`Server is running on port ${port}`);
 });

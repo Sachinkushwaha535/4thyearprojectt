@@ -3,23 +3,24 @@ const Review = require('../models/review');
 const ExpressError = require('../utils/ExpressError');
 const mongoose = require("mongoose");
 
-module.exports.createReview = async (req, res) => {
+// Create a new review for a listing
+module.exports.createReview = async (req, res, next) => {
     const { id } = req.params;
 
     // Validate listing ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        throw new ExpressError(400, 'Invalid Listing ID');
+        return next(new ExpressError(400, 'Invalid Listing ID'));
     }
 
     const listing = await Listing.findById(id);
     if (!listing) {
-        throw new ExpressError(404, 'Listing not found');
+        return next(new ExpressError(404, 'Listing not found'));
     }
 
     // Validate review rating
     const { rating } = req.body.review;
     if (rating < 1 || rating > 5) {
-        throw new ExpressError(400, 'Rating must be between 1 and 5');
+        return next(new ExpressError(400, 'Rating must be between 1 and 5'));
     }
 
     try {
@@ -37,19 +38,18 @@ module.exports.createReview = async (req, res) => {
         req.flash('success', 'Review submitted successfully!');
         res.redirect(`/listings/${listing._id}`);
     } catch (err) {
-        // Handle errors
-        console.error(err);
-        req.flash('error', 'Something went wrong while submitting your review.');
-        res.redirect(`/listings/${listing._id}`);
+        // Handle errors and pass them to the global error handler
+        next(err);
     }
 };
 
-module.exports.deleteReview = async (req, res) => {
+// Delete a review from a listing
+module.exports.deleteReview = async (req, res, next) => {
     const { id, reviewId } = req.params;
 
     // Validate IDs for listing and review
     if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(reviewId)) {
-        throw new ExpressError(400, 'Invalid ID');
+        return next(new ExpressError(400, 'Invalid Listing or Review ID'));
     }
 
     try {
@@ -61,9 +61,7 @@ module.exports.deleteReview = async (req, res) => {
         req.flash('success', 'Review deleted successfully!');
         res.redirect(`/listings/${id}`);
     } catch (err) {
-        // Handle errors
-        console.error(err);
-        req.flash('error', 'Something went wrong while deleting the review.');
-        res.redirect(`/listings/${id}`);
+        // Handle errors and pass them to the global error handler
+        next(err);
     }
 };

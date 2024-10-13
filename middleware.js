@@ -2,14 +2,20 @@ const Listing = require('./models/listings');
 const { listingSchema, reviewSchema } = require('./schema');
 const ExpressError = require('./utils/ExpressError');
 const Review = require('./models/review');
-const mongoose = require("mongoose");
+
+// Wrapper for async functions to catch errors
+const catchAsync = (fn) => {
+    return function(req, res, next) {
+        fn(req, res, next).catch(next);  // Pass errors to global error handler
+    };
+};
 
 // Middleware to check if the user is logged in
 module.exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
         req.session.redirectUrl = req.originalUrl;
-        req.flash("error", "You must be logged in to create a listing!");
-        return res.redirect("/login");  // Stop execution if not authenticated
+        req.flash("error", "You must be logged in to proceed!");  // Generic error message
+        return res.redirect("/login");
     }
     next();  // Proceed if authenticated
 };
@@ -23,7 +29,7 @@ module.exports.saveRedirectUrl = (req, res, next) => {
 };
 
 // Middleware to check if the user is the owner of the listing
-module.exports.isOwner = async (req, res, next) => {
+module.exports.isOwner = catchAsync(async (req, res, next) => {
     const { id } = req.params;
     const listing = await Listing.findById(id);
     if (!listing) {
@@ -32,10 +38,10 @@ module.exports.isOwner = async (req, res, next) => {
     }
     if (!listing.owner.equals(req.user._id)) {
         req.flash("error", "You don't have permission to edit this listing.");
-        return res.redirect(`/listings/${id}`);  // Stop execution if not the owner
+        return res.redirect(`/listings/${id}`);
     }
     next();  // Proceed if the user is the owner
-};
+});
 
 // Middleware to validate the listing data
 module.exports.validateListing = (req, res, next) => {
@@ -48,7 +54,7 @@ module.exports.validateListing = (req, res, next) => {
 };
 
 // Middleware to check if the user is the author of the review
-module.exports.isAuthor = async (req, res, next) => {
+module.exports.isAuthor = catchAsync(async (req, res, next) => {
     const { id, reviewId } = req.params;
     const review = await Review.findById(reviewId);
     if (!review) {
@@ -57,10 +63,10 @@ module.exports.isAuthor = async (req, res, next) => {
     }
     if (!review.author.equals(req.user._id)) {
         req.flash("error", "You don't have permission to edit this review.");
-        return res.redirect(`/listings/${id}`);  // Stop execution if not the author
+        return res.redirect(`/listings/${id}`);
     }
     next();  // Proceed if the user is the author
-};
+});
 
 // Middleware to validate the review data
 module.exports.validateReview = (req, res, next) => {
