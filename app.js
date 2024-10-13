@@ -85,11 +85,9 @@ app.use((req, res, next) => {
     next();
 });
 
-// Routes
-app.get('/listings', listings);
-app.get('/listings/:id/reviews', reviews);
-app.get('/', userRoutes);
- // Make sure this route is correctly placed
+app.use('/', userRoutes);  // User-related routes
+app.use('/listings', listings);  // Listings-related routes
+app.use('/listings/:id/reviews', reviews);  // Review-related routes
 
 // Catch-all 404 Error Handler
 app.all('*', (req, res, next) => {
