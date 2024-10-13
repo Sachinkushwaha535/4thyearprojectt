@@ -10,20 +10,21 @@ module.exports.Postsignup = async (req, res, next) => {
         const { username, email, password } = req.body;
         const newUser = new User({ email, username });
         const registeredUser = await User.register(newUser, password);
-        console.log("Registered user:", registeredUser);
+        console.log("Registered user:", registeredUser); // Debugging log
         
         req.login(registeredUser, (err) => {
             if (err) {
-                console.error("Login error:", err);
-                return next(err); // Properly pass error to middleware
+                console.error("Login error:", err); // Log any login errors
+                return next(err);
             }
+            console.log("User logged in successfully"); // Confirm successful login
             req.flash("success", "Welcome to Wonderlust");
-            res.redirect("/listings"); // Ensure redirection to home after login
+            res.redirect("/listings"); // Redirect after successful login
         });
     } catch (e) {
-        console.error("Signup error:", e);
+        console.error("Signup error:", e); // Log any signup errors
         req.flash("error", e.message);
-        res.redirect("/signup");
+        res.redirect("/signup"); // Redirect back to signup on error
     }
 };
 
