@@ -98,10 +98,11 @@ app.all('*', (req, res, next) => {
 // Global Error Handler
 app.use((err, req, res, next) => {
     const { statusCode = 500 } = err;
-    if (!err.message) err.message = 'Something went wrong!';
+    const message = err.message || 'Something went wrong!'; // Set a default message if none exists
     console.error(err); // Log the error details to the console
-    res.status(statusCode).render('error', { err });
+    res.status(statusCode).render('error', { message }); // Pass the message instead of the whole error object
 });
+
 
 // Start the Server
 const port = process.env.PORT || 8080;
