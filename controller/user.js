@@ -35,10 +35,27 @@ module.exports.Getlogin = (req, res) => {
     res.render("user/login");
 };
 
-module.exports.Postlogin = (req, res) => {
-    req.flash("success", "Welcome back to Wonderlust!");
-    const redirectUrl = res.locals.redirectUrl || "/listings";
-    res.redirect(redirectUrl);
+module.exports.Postlogin = (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+        if (err) {
+            console.error("Authentication error:", err); // Log any authentication errors
+            return next(err);
+        }
+        if (!user) {
+            req.flash("error", info.message || "Invalid username or password.");
+            return res.redirect("/login");
+        }
+
+        req.logIn(user, (err) => {
+            if (err) {
+                console.error("Login error:", err); // Log any login errors
+                return next(err);
+            }
+            req.flash("success", "Welcome back to Wonderlust!");
+            const redirectUrl = res.locals.redirectUrl || "/listings";
+            res.redirect(redirectUrl);
+        });
+    })(req, res, next); // Call the middleware
 };
 
 module.exports.Logout = (req, res, next) => {
