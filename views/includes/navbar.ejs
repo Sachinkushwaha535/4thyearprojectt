@@ -4,10 +4,11 @@
     color: floralwhite;
     border-radius: 25px;
     padding: 0 1rem;
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
   }
 
   .btn-search:hover {
-    background-color: #fe424d;
+    background-color: #e02a36; /* Darker shade for hover */
     color: #fff;
   }
 
@@ -38,29 +39,38 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-link" href="/listings">Explore</a>
-      </div>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/listings">Explore</a>
+        </li>
+      </ul>
       <div class="navbar-nav ms-auto">
         <div class="search-container">
           <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-search" type="submit" aria-label="Search">
+            <input class="form-control me-2" type="search" placeholder="Search listings..." aria-label="Search listings">
+            <button class="btn btn-search" type="submit" aria-label="Search the listings">
               <i class="fa-solid fa-magnifying-glass"></i> Search
             </button>
           </form>
         </div>
       </div>
-      <div class="navbar-nav ms-auto">
-        <a class="nav-link" href="/listings/new">Airbnb your home</a>
-
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/listings/new">Airbnb your home</a>
+        </li>
         <% if (!currUser) { %>
-          <a class="nav-link" href="/signup"><b>Sign up</b></a>
-          <a class="nav-link" href="/login"><b>Log in</b></a>
+          <li class="nav-item">
+            <a class="nav-link" href="/signup"><b>Sign up</b></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/login"><b>Log in</b></a>
+          </li>
         <% } else { %>
-          <a class="nav-link" href="/logout"><b>Logout</b></a>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout"><b>Logout</b></a>
+          </li>
         <% } %>
-      </div>
+      </ul>
     </div>
   </div>
 </nav>

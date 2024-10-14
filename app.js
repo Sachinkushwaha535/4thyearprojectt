@@ -23,8 +23,6 @@ const SESSION_SECRET = process.env.SESSION_SECRET;
 
 // Connect to MongoDB
 mongoose.connect(dbUrl, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
     serverSelectionTimeoutMS: 5000
 })
     .then(() => {
@@ -81,7 +79,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
-    res.locals.currUser = req.user;
+    res.locals.currUser = req.user || null; // Ensure currUser is set
     next();
 });
 
@@ -97,14 +95,13 @@ app.all('*', (req, res, next) => {
 // Global Error Handler
 app.use((err, req, res, next) => {
     const { statusCode = 500 } = err;
-    const message = err.message || 'Something went wrong!'; // Set a default message if none exists
-    console.error(err); // Log the error details to the console
-    res.status(statusCode).render('error', { message }); // Pass the message instead of the whole error object
+    const message = err.message || 'Something went wrong!';
+    console.error(err);
+    res.status(statusCode).render('error', { message });
 });
 
-
 // Start the Server
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 4000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });

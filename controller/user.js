@@ -9,10 +9,13 @@ module.exports.Postsignup = async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
         const newUser = new User({ email, username });
-        const registeredUser = await User.register(newUser, password);
-        console.log("Registered user:", registeredUser); // Debugging log
-        
-        req.login(registeredUser, (err) => {
+
+        // Register the user
+        const currUser = await User.register(newUser, password);
+        console.log("Registered user:", currUser); // Debugging log
+
+        // Log in the user
+        req.login(currUser, (err) => {
             if (err) {
                 console.error("Login error:", err); // Log any login errors
                 return next(err);
@@ -32,7 +35,7 @@ module.exports.Getlogin = (req, res) => {
     res.render("user/login");
 };
 
-module.exports.Postlogin = async (req, res) => {
+module.exports.Postlogin = (req, res) => {
     req.flash("success", "Welcome back to Wonderlust!");
     const redirectUrl = res.locals.redirectUrl || "/listings";
     res.redirect(redirectUrl);

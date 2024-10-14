@@ -14,7 +14,7 @@ const catchAsync = (fn) => {
 module.exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
         req.session.redirectUrl = req.originalUrl;
-        req.flash("error", "You must be logged in to proceed!");  // Generic error message
+        req.flash("error", "You must be logged in to proceed!");
         return res.redirect("/login");
     }
     next();  // Proceed if authenticated
@@ -24,6 +24,7 @@ module.exports.isLoggedIn = (req, res, next) => {
 module.exports.saveRedirectUrl = (req, res, next) => {
     if (req.session.redirectUrl) {
         res.locals.redirectUrl = req.session.redirectUrl;
+        delete req.session.redirectUrl;  // Clear the redirectUrl after saving
     }
     next();
 };
