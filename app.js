@@ -12,17 +12,19 @@ const flash = require('connect-flash');
 const ExpressError = require('./utils/ExpressError');
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
-const User = require("./models/user");
-const listings = require('./routes/listings');
-const reviews = require('./routes/review');
+const User = require('./models/user');
+const listingsRoutes = require('./routes/listings');
+const reviewsRoutes = require('./routes/review');
 const userRoutes = require('./routes/user');
 
 // Environment Variables
-const dbUrl = process.env.ATLASDB_URL;
-const SESSION_SECRET = process.env.SESSION_SECRET;
+const dbUrl = process.env.ATLASDB_URL || 'mongodb://localhost:27017/my-database';  // Added a fallback for local development
+const SESSION_SECRET = process.env.SESSION_SECRET || 'fallbacksecret';  // Added a fallback secret
 
 // Connect to MongoDB
 mongoose.connect(dbUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
     serverSelectionTimeoutMS: 5000
 })
     .then(() => {
@@ -54,14 +56,15 @@ store.on("error", (err) => {
 // Session Configuration
 const sessionOptions = {
     store,
+    name: 'session',  // Customize the cookie name
     secret: SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,  // Changed to false for better security
     cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-        maxAge: 7 * 24 * 60 * 60 * 1000
+        secure: process.env.NODE_ENV === 'production',  // Ensures secure cookies in production
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,  // 7 days
+        maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     }
 };
 
@@ -79,29 +82,31 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
-    res.locals.currUser = req.user || null; // Ensure currUser is set
+    res.locals.currUser = req.user || null;  // Ensure currUser is set
     next();
 });
 
+// Route Handlers
 app.use('/', userRoutes);  // User-related routes
-app.use('/listings', listings);  // Listings-related routes
-app.use('/listings/:id/reviews', reviews);  // Review-related routes
+app.use('/listings', listingsRoutes);  // Listings-related routes
+app.use('/listings/:listingId/reviews', reviewsRoutes);  // Review-related routes
 
 // Catch-all 404 Error Handler
 app.all('*', (req, res, next) => {
+    console.log(`404 Error - Requested URL: ${req.originalUrl}`);
     next(new ExpressError('Page not found', 404));
 });
 
 // Global Error Handler
 app.use((err, req, res, next) => {
     const { statusCode = 500 } = err;
-    const message = err.message || 'Something went wrong!';
+    if (!err.message) err.message = 'Something went wrong!';
     console.error(err);
-    res.status(statusCode).render('error', { message });
+    res.status(statusCode).render('error', { message: err.message });
 });
 
 // Start the Server
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });

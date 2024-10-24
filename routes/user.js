@@ -7,24 +7,23 @@ const userController = require("../controller/user");
 
 router.route("/signup")
     .get((req, res) => {
-        console.log("GET /signup");
+
         userController.Getsignup(req, res);
     })
     .post((req, res) => {
-        console.log("POST /signup");
         userController.Postsignup(req, res);
     });
 
 router.route("/login")
     .get((req, res) => {
-        console.log("GET /login");
+        
         userController.Getlogin(req, res);
     })
     .post(saveRedirectUrl, passport.authenticate("local", {
         failureRedirect: "/login",
         failureFlash: true,
     }), (req, res) => {
-        console.log("POST /login");
+        
         userController.Postlogin(req, res);
     });
 
