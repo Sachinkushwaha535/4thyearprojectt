@@ -18,8 +18,8 @@ const reviewsRoutes = require('./routes/review');
 const userRoutes = require('./routes/user');
 
 // Environment Variables
-const dbUrl = process.env.ATLASDB_URL || 'mongodb://localhost:27017/my-database';  // Added a fallback for local development
-const SESSION_SECRET = process.env.SESSION_SECRET || 'fallbacksecret';  // Added a fallback secret
+const dbUrl = process.env.ATLASDB_URL || 'mongodb://localhost:27017/my-database'; // Fallback for local development
+const SESSION_SECRET = process.env.SESSION_SECRET || 'fallbacksecret'; // Fallback secret
 
 // Connect to MongoDB
 mongoose.connect(dbUrl, {
@@ -56,15 +56,15 @@ store.on("error", (err) => {
 // Session Configuration
 const sessionOptions = {
     store,
-    name: 'session',  // Customize the cookie name
+    name: 'session', // Customize the cookie name
     secret: SESSION_SECRET,
     resave: false,
-    saveUninitialized: false,  // Changed to false for better security
+    saveUninitialized: false, // Changed to false for better security
     cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',  // Ensures secure cookies in production
-        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,  // 7 days
-        maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
+        secure: process.env.NODE_ENV === 'production', // Ensures secure cookies in production
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     }
 };
 
@@ -82,8 +82,13 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
-    res.locals.currUser = req.user || null;  // Ensure currUser is set
+    res.locals.currUser = req.user || null; // Ensure currUser is set
     next();
+});
+
+// Root Route
+app.get('/', (req, res) => {
+    res.redirect('/listings'); // Redirect to your listings or create a homepage view
 });
 
 // Route Handlers
