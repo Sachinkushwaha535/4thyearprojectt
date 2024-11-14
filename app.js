@@ -16,12 +16,12 @@ const User = require('./models/user');
 const listingsRoutes = require('./routes/listings');
 const reviewsRoutes = require('./routes/review');
 const favicon = require('serve-favicon');
-const fs = require('fs'); // Import fs module to check for file existence
+const fs = require('fs');
 const userRoutes = require('./routes/user');
 
 // Environment Variables
-const dbUrl = process.env.ATLASDB_URL || 'mongodb://localhost:27017/my-database'; // Fallback for local development
-const SESSION_SECRET = process.env.SESSION_SECRET || 'fallbacksecret'; // Fallback secret
+const dbUrl = process.env.ATLASDB_URL || 'mongodb://localhost:27017/my-database';
+const SESSION_SECRET = process.env.SESSION_SECRET || 'fallbacksecret';
 
 // Connect to MongoDB
 mongoose.connect(dbUrl, {
@@ -55,8 +55,7 @@ if (fs.existsSync(faviconPath)) {
 // Session Store Configuration
 const store = MongoStore.create({
     mongoUrl: dbUrl,
-    secret: SESSION_SECRET,
-    touchAfter: 24 * 3600
+    touchAfter: 24 * 3600 // Avoid multiple updates within 24 hours
 });
 
 store.on("error", (err) => {
@@ -66,15 +65,15 @@ store.on("error", (err) => {
 // Session Configuration
 const sessionOptions = {
     store,
-    name: 'session', // Customize the cookie name
+    name: 'session', 
     secret: SESSION_SECRET,
     resave: false,
-    saveUninitialized: false, // Changed to false for better security
+    saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Ensures secure cookies in production
-        expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        secure: process.env.NODE_ENV === 'production',
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000
     }
 };
 
@@ -92,20 +91,20 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
-    res.locals.currUser = req.user || null; // Ensure currUser is set
+    res.locals.currUser = req.user || null;
     console.log("Current User:", req.user); // Debugging log for user data
     next();
 });
 
 // Root Route
 app.get('/', (req, res) => {
-    res.redirect('/listings'); // Redirect to your listings or create a homepage view
+    res.redirect('/listings');
 });
 
 // Route Handlers
-app.use('/', userRoutes);  // User-related routes
-app.use('/listings', listingsRoutes);  // Listings-related routes
-app.use('/listings/:listingId/reviews', reviewsRoutes);  // Review-related routes
+app.use('/', userRoutes);
+app.use('/listings', listingsRoutes);
+app.use('/listings/:listingId/reviews', reviewsRoutes);
 
 // Catch-all 404 Error Handler
 app.all('*', (req, res, next) => {
