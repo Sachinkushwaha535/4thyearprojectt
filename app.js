@@ -15,6 +15,8 @@ const LocalStrategy = require("passport-local");
 const User = require('./models/user');
 const listingsRoutes = require('./routes/listings');
 const reviewsRoutes = require('./routes/review');
+const favicon = require('serve-favicon');
+const fs = require('fs'); // Import fs module to check for file existence
 const userRoutes = require('./routes/user');
 
 // Environment Variables
@@ -41,6 +43,14 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, '/public')));
+
+// Check if favicon exists and apply middleware if it does
+const faviconPath = path.join(__dirname, 'public', 'favicon.ico');
+if (fs.existsSync(faviconPath)) {
+    app.use(favicon(faviconPath));
+} else {
+    console.warn("No favicon found at /public/favicon.ico");
+}
 
 // Session Store Configuration
 const store = MongoStore.create({
@@ -83,6 +93,7 @@ app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     res.locals.currUser = req.user || null; // Ensure currUser is set
+    console.log("Current User:", req.user); // Debugging log for user data
     next();
 });
 
@@ -111,7 +122,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start the Server
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8080;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });

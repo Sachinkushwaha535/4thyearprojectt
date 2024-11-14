@@ -37,7 +37,7 @@ module.exports.isOwner = catchAsync(async (req, res, next) => {
         req.flash("error", "Listing not found.");
         return res.redirect("/listings");
     }
-    if (!listing.owner.equals(req.user._id)) {
+    if (!req.user || !listing.owner.equals(req.user._id)) {
         req.flash("error", "You don't have permission to edit this listing.");
         return res.redirect(`/listings/${id}`);
     }
@@ -62,7 +62,7 @@ module.exports.isAuthor = catchAsync(async (req, res, next) => {
         req.flash("error", "Review not found.");
         return res.redirect(`/listings/${id}`);
     }
-    if (!review.author.equals(req.user._id)) {
+    if (!req.user || !review.author.equals(req.user._id)) {
         req.flash("error", "You don't have permission to edit this review.");
         return res.redirect(`/listings/${id}`);
     }
@@ -78,3 +78,4 @@ module.exports.validateReview = (req, res, next) => {
     }
     next();  // Proceed if no validation errors
 };
+
